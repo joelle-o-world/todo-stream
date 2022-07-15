@@ -1,0 +1,30 @@
+#! /usr/local/bin/python3
+
+import fileinput
+import re
+
+dict = {}
+
+pattern = "(TODO|DONE):\\s*(.+$)"
+for line in fileinput.input():
+    match = re.search(pattern, line)
+    if match:
+        status = match[1]
+        message = match[2]
+        dict[message] = status
+    pass
+
+
+bystatus = {}
+for message in dict:
+    status = dict[message]
+    if status in bystatus:
+        bystatus[status].append(message)
+    else:
+        bystatus[status] = [message]
+
+
+for status in bystatus:
+    for message in bystatus[status]:
+        print( status+": " + message)
+    print()
