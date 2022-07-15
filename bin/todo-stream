@@ -11,7 +11,7 @@ class TodoStream:
 
     pattern = "(TODO|DONE):\\s*(.+$)"
 
-    def readLines(self, lines):
+    def read(self, lines):
         for line in lines:
             self.readLine(line)
 
@@ -20,7 +20,17 @@ class TodoStream:
         if match:
             status = match[1]
             message = match[2]
-            self.dict[message] = status
+            self.update(message, status)
+
+    def update(self, message, status):
+        self.dict[message] = status
+
+    def status(self, message):
+        "Look up the status of the given message"
+        if message in self.dict:
+            return self.dict[message]
+        else:
+            pass
 
     def messagesByStatus(self):
         byStatus = {}
@@ -43,5 +53,5 @@ class TodoStream:
 
 
 todoStream = TodoStream()
-todoStream.readLines(fileinput.input())
+todoStream.read(fileinput.input())
 todoStream.report()
