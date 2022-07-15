@@ -7,7 +7,7 @@ class TodoStream:
     def __init__(self):
         self.dict = {}
 
-    pattern = "(TODO|DONE):\\s*(.+$)"
+    pattern = "(TODO|PLAN|DONE):\\s*(.+$)"
 
     def read(self, lines):
         for line in lines:
