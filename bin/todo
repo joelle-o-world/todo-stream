@@ -1,3 +1,18 @@
 #! /bin/bash
 
-cat ~/vimwiki/StreamOfConsciousness.md | todo-stream
+tempFile="/tmp/review-todo-stream"
+todo-stream list ~/vimwiki/StreamOfConsciousness.md > $tempFile 
+$EDITOR $tempFile
+
+diff=$(todo-stream diff ~/vimwiki/StreamOfConsciousness.md $tempFile)
+
+if [ -z "$diff" ]
+then
+  echo "No change"
+else
+  echo $diff
+  echo -e "\n## $(date)\n$diff" >> ~/vimwiki/StreamOfConsciousness.md
+fi
+
+
+

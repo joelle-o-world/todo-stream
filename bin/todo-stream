@@ -3,8 +3,6 @@
 import fileinput
 import re
 
-
-
 class TodoStream:
     def __init__(self):
         self.dict = {}
@@ -51,7 +49,57 @@ class TodoStream:
 
 
 
+def diffTodoStreams(before, after):
+    diff = TodoStream()
+    for message in before.dict:
+        if after.status(message) == None and before.status(message) != "DONE":
+            diff.update(message, "DONE")
+    for message in after.dict:
+        status = after.status(message)
+        if status != before.status(message):
+            diff.update(message, status)
+    return diff
+        
 
-todoStream = TodoStream()
-todoStream.read(fileinput.input())
-todoStream.report()
+
+
+import sys
+
+# pipe mode
+if len(sys.argv) == 1:
+    todoStream = TodoStream()
+    todoStream.read(fileinput.input())
+    todoStream.report()
+else:
+    command = sys.argv[1]
+    if command == "list":
+        files = sys.argv[2:]
+        if len(files) > 0:
+            todos = TodoStream()
+            for file in files:
+                todos.read(open(file, "r"))
+            todos.report()
+        else:
+            print("usage:\n\ttodo-stream list [...files]")
+            print("Lists the todo items in the given files")
+            print("\nPlease enter at least one file\n")
+
+    elif command == "diff":
+        args = sys.argv[2:]
+        if len(args) == 2:
+            beforeFile = args[0]
+            afterFile = args[1]
+            before = TodoStream()
+            before.read(open(beforeFile, "r"))
+            after = TodoStream()
+            after.read(open(afterFile, "r"))
+            diff = diffTodoStreams(before, after)
+            diff.report()
+        else :
+            print("usage:\n\ttodo-stream diff <before-file> <after-file>")
+            print("Create a todo time diff from two files")
+            print("Please provide two files")
+
+
+    else:
+        print("Unexpected command: " + command)
