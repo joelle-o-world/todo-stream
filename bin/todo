@@ -10,7 +10,7 @@ if [ -z "$diff" ]
 then
   echo "No change"
 else
-  echo $diff
+  echo -e "$diff"
   echo -e "\n## $(date)\n$diff" >> ~/vimwiki/StreamOfConsciousness.md
 fi
 
