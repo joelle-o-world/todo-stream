@@ -1,18 +1,23 @@
 #! /bin/bash
 
-tempFile="/tmp/review-todo-stream"
-todo-stream list ~/vimwiki/StreamOfConsciousness.md > $tempFile 
-$EDITOR $tempFile
+if [ "$1" == "-i" ] ; then
+  tempFile="/tmp/review-todo-stream"
+  todo-stream list ~/vimwiki/StreamOfConsciousness.md > $tempFile 
+  $EDITOR $tempFile
 
-diff=$(todo-stream diff ~/vimwiki/StreamOfConsciousness.md $tempFile)
+  diff=$(todo-stream diff ~/vimwiki/StreamOfConsciousness.md $tempFile)
 
-if [ -z "$diff" ]
-then
-  echo "No change"
+  if [ -z "$diff" ]
+  then
+    echo "No change"
+  else
+    echo -e "$diff"
+    echo -e "\n## $(date)\n$diff" >> ~/vimwiki/StreamOfConsciousness.md
+  fi
+
 else
-  echo -e "$diff"
-  echo -e "\n## $(date)\n$diff" >> ~/vimwiki/StreamOfConsciousness.md
-fi
 
+  todo-stream list ~/vimwiki/StreamOfConsciousness.md 
+fi
 
 

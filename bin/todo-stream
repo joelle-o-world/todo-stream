@@ -7,7 +7,7 @@ class TodoStream:
     def __init__(self):
         self.dict = {}
 
-    pattern = "(TODO|PLAN|DONE):\\s*(.+$)"
+    pattern = "(TODO|GOAL|PLAN|TODAY|DONE):\\s*(.+$)"
 
     def read(self, lines):
         for line in lines:
@@ -28,7 +28,7 @@ class TodoStream:
         if message in self.dict:
             return self.dict[message]
         else:
-            pass
+            return None
 
     def messagesByStatus(self):
         byStatus = {}
@@ -40,11 +40,12 @@ class TodoStream:
                 byStatus[status] = [message]
         return byStatus
 
-    def report(self):
+    def report(self, showDone= False):
         byStatus = self.messagesByStatus()
         for status in byStatus:
             for message in byStatus[status]:
-                print(status+": " + message)
+                if status != "DONE" or showDone:
+                    print(status+": " + message)
             print()
 
 
@@ -52,7 +53,7 @@ class TodoStream:
 def diffTodoStreams(before, after):
     diff = TodoStream()
     for message in before.dict:
-        if after.status(message) == None and before.status(message) != "DONE":
+        if (after.status(message) is None) and (before.status(message) != "DONE"):
             diff.update(message, "DONE")
     for message in after.dict:
         status = after.status(message)
@@ -69,7 +70,7 @@ import sys
 if len(sys.argv) == 1:
     todoStream = TodoStream()
     todoStream.read(fileinput.input())
-    todoStream.report()
+    todoStream.report(False)
 else:
     command = sys.argv[1]
     if command == "list":
@@ -78,7 +79,7 @@ else:
             todos = TodoStream()
             for file in files:
                 todos.read(open(file, "r"))
-            todos.report()
+            todos.report(False)
         else:
             print("usage:\n\ttodo-stream list [...files]")
             print("Lists the todo items in the given files")
@@ -94,7 +95,7 @@ else:
             after = TodoStream()
             after.read(open(afterFile, "r"))
             diff = diffTodoStreams(before, after)
-            diff.report()
+            diff.report(True)
         else :
             print("usage:\n\ttodo-stream diff <before-file> <after-file>")
             print("Create a todo time diff from two files")
